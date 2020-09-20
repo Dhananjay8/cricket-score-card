@@ -75,7 +75,7 @@ class ScoreBoard {
       const deliveryOutput = deliveryOutputFactory.getOutput(input);
       // console.log('deliverOver::deliveryOutput---', deliveryOutput);
 
-      if(!deliveryOutput) break;
+      if(!deliveryOutput) continue;
 
       switch (deliveryOutput.getOutputType()) {
         case 'RUN':
