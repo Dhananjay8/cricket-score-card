@@ -6,7 +6,9 @@
     "start": "node ./cricketScoreBoardMain.js",
     "pre-commit": "lint-staged"
   },
-  "dependencies": {},
+  "dependencies": {
+    "bignumber.js": "^9.0.0"
+  },
   "devDependencies": {},
   "pre-commit": [
     "pre-commit"

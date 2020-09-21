@@ -2,6 +2,7 @@ const process = require('process');
 
 const rootPrefix = '.',
   Team = require(rootPrefix + '/app/models/Team'),
+  validatorsFunctions = require(rootPrefix + '/lib/validators'),
   helperFunctions = require(rootPrefix + '/lib/helper'),
   ScoreBoardLogic = require(rootPrefix + '/app/services/ScoreBoardLogic');
 
@@ -45,16 +46,24 @@ class mainPerformer {
 
     oThis.playerCount = await helperFunctions.askQuestion('*** No. of players for each team: ');
 
-    if(!oThis.playerCount || typeof oThis.playerCount != 'string' || !parseInt(oThis.playerCount)) {
-      throw new Error('Validation failed.')
+    if(!validatorsFunctions.validateNonEmptyString(oThis.playerCount) || !validatorsFunctions.validateInteger(oThis.playerCount)) {
+      return Promise.reject('Validation failed for playerCount.');
+    }
+
+    if(!parseInt(oThis.playerCount) || parseInt(oThis.playerCount) <= 2) {
+      return Promise.reject(`Minimum 3 players are required for a match.`)
     }
 
     oThis._setTeams();
 
     oThis.overs = await helperFunctions.askQuestion('*** Number of overs: ');
 
-    if(!oThis.overs || typeof oThis.overs != 'string' || !parseInt(oThis.overs)) {
-      throw new Error('Validation failed.')
+    if(!validatorsFunctions.validateNonEmptyString(oThis.overs) || !validatorsFunctions.validateInteger(oThis.overs)) {
+      return Promise.reject('Validation failed for overs.');
+    }
+
+    if(!parseInt(oThis.overs) || parseInt(oThis.overs) <= 1) {
+      return Promise.reject(`${oThis.overs} number is not allowed.`)
     }
   }
 
