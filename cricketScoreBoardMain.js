@@ -44,7 +44,7 @@ class mainPerformer {
   async _readInputs() {
     const oThis = this;
 
-    oThis.playerCount = await helperFunctions.askQuestion('*** No. of players for each team: ');
+    oThis.playerCount = await helperFunctions.askQuestion('*** Number of players for each team: ');
 
     if(!validatorsFunctions.validateNonEmptyString(oThis.playerCount) || !validatorsFunctions.validateInteger(oThis.playerCount)) {
       return Promise.reject('Validation failed for playerCount.');
@@ -62,7 +62,7 @@ class mainPerformer {
       return Promise.reject('Validation failed for overs.');
     }
 
-    if(!parseInt(oThis.overs) || parseInt(oThis.overs) <= 1) {
+    if(!parseInt(oThis.overs) || parseInt(oThis.overs) < 1) {
       return Promise.reject(`${oThis.overs} number is not allowed.`)
     }
   }

@@ -2,10 +2,20 @@ const rootPrefix = '../..',
   helperFunctions = require(rootPrefix + '/lib/helper'),
   globalConstants = require(rootPrefix + '/lib/constants/global'),
   batsmanConstants = require(rootPrefix + '/lib/constants/batsman'),
+  validatorsFunctions = require(rootPrefix + '/lib/validators'),
+  outputTypeConstants = require(rootPrefix + '/lib/constants/outputType'),
   deliveryOutputFactory = require(rootPrefix + '/lib/deliveryOutput/factory'),
   Batsman = require(rootPrefix + '/app/models/Batsman');
 
 class ScoreBoard {
+  /**
+   * Constructor for score board.
+   *
+   * @param battingTeam
+   * @param bowlingTeam
+   * @param inningNumber
+   * @param totalOvers
+   */
   constructor(battingTeam, bowlingTeam, inningNumber, totalOvers) {
     const oThis = this;
 
@@ -18,12 +28,22 @@ class ScoreBoard {
     oThis.currOver = 0;
   }
 
+  /**
+   * Setup score board.
+   *
+   * @returns {Promise<void>}
+   */
   async setupScoreBoard() {
     const oThis = this;
 
     await oThis.setUpBattingOrder();
   }
 
+  /**
+   * Setting up batting order.
+   *
+   * @returns {Promise<>}
+   */
   async setUpBattingOrder() {
     const oThis = this;
 
@@ -35,6 +55,10 @@ class ScoreBoard {
     for(let i = 0; i < playersCount; i++) {
       let input = await helperFunctions.askQuestion('');
 
+      if(!validatorsFunctions.validateAlphaString(input)) {
+        return Promise.reject('Validation failed for batsman name.');
+      }
+
       oThis.battingOrder[i] = new Batsman({name: input});
     }
 
@@ -44,6 +68,11 @@ class ScoreBoard {
     oThis.offStrike.setStatus(batsmanConstants.BATTING);
   }
 
+  /**
+   * Play function.
+   *
+   * @returns {Promise<void>}
+   */
   async play() {
     const oThis = this;
 
@@ -65,6 +94,11 @@ class ScoreBoard {
     }
   }
 
+  /**
+   * Deliver over logic.
+   *
+   * @returns {Promise<void>}
+   */
   async deliverOver() {
     const oThis = this;
 
@@ -72,7 +106,7 @@ class ScoreBoard {
       let input =  await oThis.getDeliveryOutput();
 
       // console.log('deliverOver::input---', input);
-      const deliveryOutput = deliveryOutputFactory.getOutput(input);
+      const deliveryOutput = await deliveryOutputFactory.getOutput(input);
       // console.log('deliverOver::deliveryOutput---', deliveryOutput);
 
       if(!deliveryOutput) continue;
@@ -128,6 +162,10 @@ class ScoreBoard {
     }
   }
 
+  /**
+   * Display scoreboard.
+   *
+   */
   displayScoreBoard() {
     const oThis = this;
 
@@ -154,18 +192,33 @@ class ScoreBoard {
     }
   }
 
+  /**
+   * Get delivery output.
+   *
+   * @returns {Promise<*>}
+   */
   async getDeliveryOutput() {
     const oThis = this;
 
     let deliveryOutput = await helperFunctions.askQuestion('');
 
-    while( !deliveryOutput || Number(deliveryOutput) > 6 || Number(deliveryOutput) < 0 || Number(deliveryOutput) == 5) {
-      deliveryOutput = await helperFunctions.askQuestion(`You input ${deliveryOutput} is invalid, Please Retry!`);
+    if( !validatorsFunctions.validateNonEmptyString(deliveryOutput) ) {
+      return Promise.reject(`Validation failed for ball delivery. Value: ${deliveryOutput} is invalid.`);
+    } else {
+      deliveryOutput = deliveryOutput.trim();
+    }
+
+    while( Number(deliveryOutput) > 6 || Number(deliveryOutput) < 0 || Number(deliveryOutput) == 5) {
+      deliveryOutput = await helperFunctions.askQuestion(`${deliveryOutput} is invalid delivery, Please Retry!`);
     }
 
     return deliveryOutput;
   }
 
+  /**
+   * Toggle players.
+   *
+   */
   togglePlayers() {
     const oThis = this;
 
@@ -174,6 +227,11 @@ class ScoreBoard {
     oThis.offStrike = p;
   }
 
+  /**
+   * Get inning status.
+   *
+   * @returns {boolean}
+   */
   getInningStatus() {
     const oThis = this;
 
