@@ -85,7 +85,7 @@ class mainPerformer {
  *
  */
 new mainPerformer().perform().then(function (r) {
-  console.log(r);
+  //console.log(r);
   process.exit(0);
 }).catch(function (err) {
   console.error(err);

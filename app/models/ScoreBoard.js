@@ -47,7 +47,7 @@ class ScoreBoard {
   async setUpBattingOrder() {
     const oThis = this;
 
-    console.log("*** Batting order for " + oThis.battingTeam.getName() + ":");
+    console.log("\n\n*** Batting order for " + oThis.battingTeam.getName() + ":");
 
     let playersCount = oThis.battingTeam.getPlayersCount();
     oThis.battingOrder = new Array(playersCount);
@@ -77,7 +77,7 @@ class ScoreBoard {
     const oThis = this;
 
     for(let overCount = 1; overCount <= oThis.totalOvers; overCount++){
-      console.log("Over " + overCount + ":");
+      console.log("\nOver " + overCount + ":");
 
       await oThis.deliverOver();
 
